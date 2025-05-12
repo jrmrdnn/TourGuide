@@ -1,0 +1,6 @@
+logs
+target
+.env
+.idea
+.vscode
+.DS_Store
