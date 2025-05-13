@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -16,8 +19,10 @@ import gpsUtil.GpsUtil;
 import gpsUtil.location.Attraction;
 import gpsUtil.location.Location;
 import gpsUtil.location.VisitedLocation;
+import lombok.extern.slf4j.Slf4j;
 import rewardCentral.RewardCentral;
 
+@Slf4j
 @Service
 public class RewardsService {
 
@@ -60,6 +65,28 @@ public class RewardsService {
       user.addUserReward(
           new UserReward(visitedLocation, attraction, rewardPoints));
     }
+  }
+
+  public void calculateRewards(List<User> users) {
+    int threads = Math.min(users.size(), 100);
+    ExecutorService executor = Executors.newFixedThreadPool(threads);
+
+    for (User user : users)
+      executor.execute(() -> calculateRewards(user));
+
+    executor.shutdown();
+
+    try {
+      if (!executor.awaitTermination(20, TimeUnit.MINUTES)) {
+        log.warn(
+            "Timeout while waiting for reward calculation threads to finish");
+      }
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      log.error("Rewards calculation interrupted", e);
+    }
+
+    log.debug("All users rewards calculated");
   }
 
   public boolean isWithinAttractionProximity(

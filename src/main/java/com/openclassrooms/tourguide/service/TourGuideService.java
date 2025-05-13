@@ -10,11 +10,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.openclassrooms.tourguide.dto.AttractionDto;
@@ -27,12 +28,13 @@ import gpsUtil.GpsUtil;
 import gpsUtil.location.Attraction;
 import gpsUtil.location.Location;
 import gpsUtil.location.VisitedLocation;
+import lombok.extern.slf4j.Slf4j;
 import tripPricer.Provider;
 import tripPricer.TripPricer;
 
+@Slf4j
 @Service
 public class TourGuideService {
-	private Logger logger = LoggerFactory.getLogger(TourGuideService.class);
 	private final GpsUtil gpsUtil;
 	private final RewardsService rewardsService;
 	private final TripPricer tripPricer = new TripPricer();
@@ -46,10 +48,10 @@ public class TourGuideService {
 		Locale.setDefault(Locale.US);
 
 		if (testMode) {
-			logger.info("TestMode enabled");
-			logger.debug("Initializing users");
+			log.info("TestMode enabled");
+			log.debug("Initializing users");
 			initializeInternalUsers();
-			logger.debug("Finished initializing users");
+			log.debug("Finished initializing users");
 		}
 		tracker = new Tracker(this);
 		addShutDownHook();
@@ -93,6 +95,28 @@ public class TourGuideService {
 		user.addToVisitedLocations(visitedLocation);
 		rewardsService.calculateRewards(user);
 		return visitedLocation;
+	}
+
+	public void trackUserLocation(List<User> users) {
+		int threads = Math.min(users.size(), 100);
+		ExecutorService executor = Executors.newFixedThreadPool(threads);
+
+		for (User user : users)
+			executor.execute(() -> trackUserLocation(user));
+
+		executor.shutdown();
+
+		try {
+			if (!executor.awaitTermination(20, TimeUnit.MINUTES)) {
+				log.warn(
+						"Timeout while waiting for location tracking threads to finish");
+			}
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			log.error("Location tracking interrupted", e);
+		}
+
+		log.debug("All users locations tracked");
 	}
 
 	public List<Attraction> getNearByAttractions(
@@ -168,7 +192,7 @@ public class TourGuideService {
 
 			internalUserMap.put(userName, user);
 		});
-		logger.debug("Created " + InternalTestHelper.getInternalUserNumber() + " internal test users.");
+		log.debug("Created " + InternalTestHelper.getInternalUserNumber() + " internal test users.");
 	}
 
 	private void generateUserLocationHistory(User user) {
