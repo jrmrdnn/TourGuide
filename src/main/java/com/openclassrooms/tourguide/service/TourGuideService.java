@@ -2,6 +2,7 @@ package com.openclassrooms.tourguide.service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.openclassrooms.tourguide.dto.AttractionDto;
 import com.openclassrooms.tourguide.helper.InternalTestHelper;
 import com.openclassrooms.tourguide.tracker.Tracker;
 import com.openclassrooms.tourguide.user.User;
@@ -104,6 +106,32 @@ public class TourGuideService {
 		});
 
 		return allAttractions.stream().limit(5).collect(Collectors.toList());
+	}
+
+	public List<AttractionDto> getListAttractionsDto(String userName) {
+		User user = getUser(userName);
+
+		VisitedLocation visitedLocation = getUserLocation(user);
+
+		List<Attraction> attractions = getNearByAttractions(visitedLocation);
+
+		List<AttractionDto> listAttractionsDto = new ArrayList<>();
+
+		for (Attraction attraction : attractions) {
+			AttractionDto attractionDto = new AttractionDto();
+			attractionDto.setAttractionName(attraction.attractionName);
+			attractionDto.setAttractionLatitude(attraction.latitude);
+			attractionDto.setAttractionLongitude(attraction.longitude);
+			attractionDto.setUserLatitude(visitedLocation.location.latitude);
+			attractionDto.setUserLongitude(visitedLocation.location.longitude);
+			attractionDto.setDistanceInMiles(
+					getDistance(visitedLocation.location, attraction));
+			attractionDto.setRewardPoints(
+					rewardsService.getRewardPoints(attraction, user));
+
+			listAttractionsDto.add(attractionDto);
+		}
+		return listAttractionsDto;
 	}
 
 	private void addShutDownHook() {
