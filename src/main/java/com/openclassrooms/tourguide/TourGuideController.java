@@ -1,24 +1,22 @@
 package com.openclassrooms.tourguide;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.openclassrooms.tourguide.dto.AttractionDto;
 import com.openclassrooms.tourguide.service.TourGuideService;
 import com.openclassrooms.tourguide.user.User;
 import com.openclassrooms.tourguide.user.UserReward;
-
 import gpsUtil.location.VisitedLocation;
+import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import tripPricer.Provider;
 
+import java.util.List;
+
 @RestController
+@AllArgsConstructor
 public class TourGuideController {
 
-    @Autowired
     TourGuideService tourGuideService;
 
     @RequestMapping("/")
@@ -32,10 +30,8 @@ public class TourGuideController {
     }
 
     @RequestMapping("/getNearbyAttractions")
-    public List<AttractionDto> getNearbyAttractions(
-            @RequestParam String userName) {
-        List<AttractionDto> listAttractionsDto = tourGuideService.getListAttractionsDto(userName);
-        return listAttractionsDto;
+    public List<AttractionDto> getNearbyAttractions(@RequestParam String userName) {
+        return tourGuideService.getListAttractionsDto(userName);
     }
 
     @RequestMapping("/getRewards")
