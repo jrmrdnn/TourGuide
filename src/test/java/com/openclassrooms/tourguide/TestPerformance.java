@@ -49,7 +49,7 @@ public class TestPerformance {
     public class TestHighVolumeTrackLocation {
 
         @ParameterizedTest
-        @ValueSource(ints = {10, 100, 1_000, 10_000, 100_000})
+        @ValueSource(ints = {1, 5, 10, 50, 100, 500, 1_000, 5_000, 10_000, 50_000, 100_000})
         public void highVolumeTrackLocation(int numberOfUsers) {
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();
@@ -77,7 +77,7 @@ public class TestPerformance {
     public class TestHighVolumeGetRewards {
 
         @ParameterizedTest
-        @ValueSource(ints = {10, 100, 1_000, 10_000, 100_000})
+        @ValueSource(ints = {1, 5, 10, 50, 100, 500, 1_000, 5_000, 10_000, 50_000, 100_000})
         public void highVolumeGetRewards(int numberOfUsers) {
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();

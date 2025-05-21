@@ -4,6 +4,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * UserPreferences is a class that represents the preferences of a user in the Tour Guide application.
+ * It contains settings related to attraction proximity, trip duration, ticket quantity, and number of adults and children.
+ */
 @Setter
 @Getter
 @NoArgsConstructor

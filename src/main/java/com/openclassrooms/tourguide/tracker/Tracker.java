@@ -10,6 +10,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Tracker is a thread that periodically tracks the location of all users in the TourGuideService.
+ * It runs every 5 minutes by default, but this interval can be adjusted if needed.
+ */
 @Slf4j
 public class Tracker extends Thread {
     private static final long trackingPollingInterval = TimeUnit.MINUTES.toSeconds(5);
@@ -17,6 +21,11 @@ public class Tracker extends Thread {
     private final TourGuideService tourGuideService;
     private boolean stop = false;
 
+    /**
+     * Constructor for Tracker.
+     *
+     * @param tourGuideService the TourGuideService instance to track user locations
+     */
     public Tracker(TourGuideService tourGuideService) {
         this.tourGuideService = tourGuideService;
 
@@ -31,6 +40,10 @@ public class Tracker extends Thread {
         executorService.shutdownNow();
     }
 
+    /**
+     * The run method of the Tracker thread.
+     * It continuously tracks user locations at specified intervals until interrupted or stopped.
+     */
     @Override
     public void run() {
         StopWatch stopWatch = new StopWatch();

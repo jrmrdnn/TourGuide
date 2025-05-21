@@ -2,6 +2,11 @@ package com.openclassrooms.tourguide.dto;
 
 import lombok.Data;
 
+/**
+ * AttractionDto is a Data Transfer Object that contains information about a tourist attraction,
+ * including its name, location, the user's location, the distance from the user to the attraction,
+ * and the reward points associated with visiting the attraction.
+ */
 @Data
 public class AttractionDto {
 

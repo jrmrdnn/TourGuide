@@ -13,6 +13,10 @@ import tripPricer.Provider;
 
 import java.util.List;
 
+/**
+ * TourGuideController is a REST controller that provides endpoints for the Tour Guide application.
+ * It allows users to get their location, nearby attractions, rewards, and trip deals.
+ */
 @RestController
 @AllArgsConstructor
 public class TourGuideController {
@@ -44,6 +48,12 @@ public class TourGuideController {
         return tourGuideService.getTripDeals(getUser(userName));
     }
 
+    /**
+     * Helper method to retrieve a User object by username.
+     *
+     * @param userName the username of the user
+     * @return the User object associated with the given username
+     */
     private User getUser(String userName) {
         return tourGuideService.getUser(userName);
     }
