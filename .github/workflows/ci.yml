@@ -33,5 +33,5 @@ jobs:
       run: mvn test --batch-mode
 
     - name: Build artifacts
-      run: mvn package --batch-mode
+      run: mvn package --batch-mode -DskipTests
 
